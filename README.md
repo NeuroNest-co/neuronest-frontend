@@ -46,7 +46,7 @@ CervicalScan AI is a web-based platform that leverages deep learning for the seg
 1. Clone the repository:
    ```bash
    exeample :
-   git clone https://github.com/yourusername/cervicalscan-ai.git
+   git clone https://github.com/Damasoumana1/CervicalScan_ai.git
    ```
 
 2. Navigate to the project directory:
