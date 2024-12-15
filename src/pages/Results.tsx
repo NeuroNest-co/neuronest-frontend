@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Calendar, Filter, Download, FileText, Trash2 } from 'lucide-react';
 import Button from '../components/common/Button';
 import ResultsTable from '../components/Results/ResultsTable';

@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface ImageComparisonProps {
   originalImage: string;
   segmentedImage: string | null;

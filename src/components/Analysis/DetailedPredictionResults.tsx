@@ -1,4 +1,3 @@
-import React from 'react';
 import PredictionTable from './PredictionTable';
 import ClassDistributionChart from './ClassDistributionChart';
 

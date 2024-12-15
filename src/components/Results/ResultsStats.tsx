@@ -1,4 +1,3 @@
-import React from 'react';
 import { FileText, AlertTriangle, Clock, Activity } from 'lucide-react';
 
 interface ResultsStatsProps {

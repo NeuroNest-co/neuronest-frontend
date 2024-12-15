@@ -1,6 +1,4 @@
-import React from 'react';
 import { Eye, Download, Trash2 } from 'lucide-react';
-import Button from '../common/Button';
 
 interface Result {
   id: number;

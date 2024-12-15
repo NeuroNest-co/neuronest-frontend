@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Github, Twitter, Linkedin, Heart, Mail, Phone, MapPin, ArrowRight, FileText, Users, Shield, HelpCircle } from 'lucide-react';
 

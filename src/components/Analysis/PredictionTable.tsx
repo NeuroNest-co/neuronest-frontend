@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface PredictionClass {
   id: string;
   name: string;
