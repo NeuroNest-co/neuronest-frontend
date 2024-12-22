@@ -1,52 +1,57 @@
 import React, { useState } from 'react';
-import DropZone from '../components/Upload/DropZone';
-import ImagePreview from '../components/Upload/ImagePreview';
 import UploadActions from '../components/Upload/UploadActions';
+import ImagePreview from '../components/Upload/ImagePreview';
 import ImageComparison from '../components/Analysis/ImageComparison';
 import AnalysisResults from '../components/Analysis/AnalysisResults';
 
 export default function Upload() {
-  const [files, setFiles] = useState<File[]>([]);
+  const BASE_URL = 'http://127.0.0.1:8000';
+  const [file, setFile] = useState<File | null>(null); // Handle a single file
   const [analyzing, setAnalyzing] = useState(false);
-  const [analysisResults, setAnalysisResults] = useState<{
-    segmentedImage: string;
-    findings: {
-      lesionCount: number;
-      severity: 'Low' | 'Medium' | 'High';
-      confidence: number;
-      date: string;
-    };
-  } | null>(null);
-
-  const handleFileUpload = (newFiles: File[]) => {
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-  };
+  const [analysisResults, setAnalysisResults] = useState<any>(null);
 
   const handleFileSelect = (fileList: FileList) => {
-    const newFiles = Array.from(fileList);
-    handleFileUpload(newFiles);
+    if (fileList.length > 0) {
+      setFile(fileList[0]); // Keep only the first file
+    }
   };
 
-  const handleRemoveFile = (index: number) => {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  const handleRemoveFile = () => {
+    setFile(null); // Clear the file
   };
 
   const handleAnalyze = async () => {
+    if (!file) {
+      alert('Please upload an image before analyzing');
+      return;
+    }
     setAnalyzing(true);
-    
-    // Simulate analysis process
-    setTimeout(() => {
-      setAnalysisResults({
-        segmentedImage: URL.createObjectURL(files[0]), // In real app, this would be the processed image
-        findings: {
-          lesionCount: 3,
-          severity: 'Medium',
-          confidence: 89,
-          date: new Date().toLocaleDateString(),
-        },
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch(`${BASE_URL}/predict/`, {
+        method: 'POST',
+        body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error('Image analysis failed');
+      }
+
+      const data = await response.json();
+      setAnalysisResults({
+        originalImage: `${BASE_URL}${data.data.original_image_url}`,
+        segmentedImage: `${BASE_URL}${data.data.predicted_image_url}`,
+        findings: data.data.metrics,
+        pieChartData: data.data.pie_chart_data,
+      });
+    } catch (error) {
+      console.error('Error during analysis:', error);
+    } finally {
       setAnalyzing(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -61,34 +66,43 @@ export default function Upload() {
 
         <UploadActions
           onFileSelect={handleFileSelect}
-          canAnalyze={files.length > 0 && !analyzing}
-          onAnalyze={handleAnalyze}
+          canAnalyze={false} // Disable the analyze button in UploadActions
+          onAnalyze={() => {}}
         />
 
-        <DropZone onFileUpload={handleFileUpload} />
-
-        {files.length > 0 && (
+        {file && (
           <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4">Uploaded Images</h2>
-            <ImagePreview files={files} onRemove={handleRemoveFile} />
-          </div>
-        )}
+            <h2 className="text-xl font-semibold mb-4">Uploaded Image</h2>
+            <ImagePreview file={file} onRemove={handleRemoveFile} />
 
-        {analyzing && (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Analyzing images...</p>
+            {/* Analyze Button placed below the image preview */}
+            <div className="mt-4 text-center">
+              <button
+                onClick={handleAnalyze}
+                className={`px-6 py-2 rounded-lg font-semibold ${
+                  analyzing
+                    ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                    : 'bg-indigo-600 text-white hover:bg-indigo-500'
+                }`}
+                disabled={analyzing}
+              >
+                {analyzing ? 'Analyzing...' : 'Analyze Image'}
+              </button>
+            </div>
           </div>
         )}
 
         {analysisResults && (
           <div className="space-y-8">
             <ImageComparison
-              originalImage={URL.createObjectURL(files[0])}
+              originalImage={analysisResults.originalImage}
               segmentedImage={analysisResults.segmentedImage}
               findings={analysisResults.findings}
             />
-            <AnalysisResults results={analysisResults.findings} />
+            <AnalysisResults
+              findings={analysisResults.findings}
+              pieChartData={analysisResults.pieChartData}
+            />
           </div>
         )}
       </div>

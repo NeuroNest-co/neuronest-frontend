@@ -14,7 +14,7 @@ export default function Results() {
   const mockPredictions = [
     {
       id: '1',
-      name: 'Mucosa',
+      name: 'Mucus',
       precision: 95.5,
       minScore: 85.0,
       maxScore: 98.5,
@@ -43,7 +43,7 @@ export default function Results() {
 
   // Mock data for class distribution
   const mockDistributions = [
-    { name: 'Mucosa', percentage: 50 },
+    { name: 'Mucus', percentage: 50 },
     { name: 'Lesions', percentage: 30 },
     { name: 'Light', percentage: 20 },
   ];

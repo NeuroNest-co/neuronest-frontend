@@ -1,31 +1,29 @@
 import { X } from 'lucide-react';
 
 interface ImagePreviewProps {
-  files: File[];
-  onRemove: (index: number) => void;
+  file: File;
+  onRemove: () => void;
 }
 
-export default function ImagePreview({ files, onRemove }: ImagePreviewProps) {
+export default function ImagePreview({ file, onRemove }: ImagePreviewProps) {
+  if (!file) return null;
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {files.map((file, index) => (
-        <div key={index} className="relative group">
-          <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200">
-            <img
-              src={URL.createObjectURL(file)}
-              alt={`Upload ${index + 1}`}
-              className="object-cover"
-            />
-            <button
-              onClick={() => onRemove(index)}
-              className="absolute top-2 right-2 p-1 bg-red-500 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          <p className="mt-2 text-sm text-gray-500 truncate">{file.name}</p>
-        </div>
-      ))}
+    <div className="relative group w-full max-w-xs mx-auto">
+      <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200 flex items-center justify-center">
+        <img
+          src={URL.createObjectURL(file)}
+          alt="Uploaded"
+          className="object-contain max-h-full max-w-full" // Ensures the image is contained within the div and centered
+        />
+        <button
+          onClick={onRemove}
+          className="absolute top-2 right-2 p-1 bg-red-500 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+      <p className="mt-2 text-sm text-gray-500 truncate text-center">{file.name}</p>
     </div>
   );
 }
