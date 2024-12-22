@@ -25,7 +25,7 @@ export default function DropZone({ onFileUpload }: { onFileUpload: (files: File[
       console.log(result);
 
       if (result.success) {
-        onFileUpload(result.data); // Pass the data from the response upward
+        onFileUpload(result.data);
       } else {
         alert(result.message);
       }
