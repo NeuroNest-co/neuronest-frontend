@@ -1,11 +1,15 @@
+interface Finding {
+  class_name: string;
+  mean_score: number;
+  max_score: number;
+  min_score: number;
+  count: number;
+}
+
 interface ImageComparisonProps {
   originalImage: string;
-  segmentedImage: string | null;
-  findings: {
-    lesionCount: number;
-    severity: 'Low' | 'Medium' | 'High';
-    confidence: number;
-  } | null;
+  segmentedImage: string;
+  findings: Finding[];
 }
 
 export default function ImageComparison({ 
@@ -13,6 +17,13 @@ export default function ImageComparison({
   segmentedImage, 
   findings 
 }: ImageComparisonProps) {
+  // Determine severity level based on mean_score
+  const getSeverityLevel = (mean_score: number) => {
+    if (mean_score < 0.3) return 'Low';
+    if (mean_score < 0.7) return 'Medium';
+    return 'High';
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -30,40 +41,30 @@ export default function ImageComparison({
 
         {/* Segmented Image */}
         <div>
-          <h3 className="text-lg font-semibold mb-3">Segmented Analysis</h3>
+          <h3 className="text-lg font-semibold mb-3">Segmented Image</h3>
           <div className="aspect-w-1 aspect-h-1 rounded-lg overflow-hidden bg-gray-100">
-            {segmentedImage ? (
-              <img
-                src={segmentedImage}
-                alt="Segmented analysis"
-                className="object-cover w-full h-full"
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <p className="text-gray-500">Analysis in progress...</p>
-              </div>
-            )}
+            <img
+              src={segmentedImage}
+              alt="Segmented medical image"
+              className="object-cover w-full h-full"
+            />
           </div>
         </div>
       </div>
 
       {/* Findings */}
-      {findings && (
+      {findings && findings.length > 0 && (
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
           <h4 className="text-lg font-semibold mb-3">Analysis Findings</h4>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-3 bg-white rounded-lg shadow">
-              <p className="text-sm text-gray-600">Lesions Detected</p>
-              <p className="text-2xl font-bold text-indigo-600">{findings.lesionCount}</p>
-            </div>
-            <div className="text-center p-3 bg-white rounded-lg shadow">
-              <p className="text-sm text-gray-600">Severity Level</p>
-              <p className="text-2xl font-bold text-indigo-600">{findings.severity}</p>
-            </div>
-            <div className="text-center p-3 bg-white rounded-lg shadow">
-              <p className="text-sm text-gray-600">Confidence</p>
-              <p className="text-2xl font-bold text-indigo-600">{findings.confidence}%</p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {findings.map((finding, index) => (
+              <div key={index} className="p-3 bg-white rounded-lg shadow">
+                <h5 className="text-sm font-semibold text-gray-700">{finding.class_name}</h5>
+                <p className="text-sm text-gray-600">Lesions Detected: {finding.count}</p>
+                <p className="text-sm text-gray-600">Severity Level: {getSeverityLevel(finding.mean_score)}</p>
+                <p className="text-sm text-gray-600">Confidence: {(finding.max_score * 100).toFixed(2)}%</p>
+              </div>
+            ))}
           </div>
         </div>
       )}

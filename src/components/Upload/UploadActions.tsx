@@ -31,7 +31,6 @@ export default function UploadActions({ onFileSelect, canAnalyze, onAnalyze }: U
         ref={fileInputRef}
         onChange={handleFileChange}
         accept="image/jpeg,image/png,image/tiff"
-        multiple
         className="hidden"
       />
       <Button
@@ -39,14 +38,14 @@ export default function UploadActions({ onFileSelect, canAnalyze, onAnalyze }: U
         variant="secondary"
         onClick={handleFileSelect}
       >
-        Select Files
+        Select File
       </Button>
       {canAnalyze && (
         <Button
           icon={ImagePlus}
           onClick={onAnalyze}
         >
-          Analyze Images
+          Analyze Image
         </Button>
       )}
     </div>

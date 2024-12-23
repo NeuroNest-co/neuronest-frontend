@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, Filter, Download, FileText, Trash2 } from 'lucide-react';
+import { Filter, FileText } from 'lucide-react';
 import Button from '../components/common/Button';
 import ResultsTable from '../components/Results/ResultsTable';
 import ResultsFilter from '../components/Results/ResultsFilter';
@@ -14,7 +14,7 @@ export default function Results() {
   const mockPredictions = [
     {
       id: '1',
-      name: 'Mucosa',
+      name: 'Mucus',
       precision: 95.5,
       minScore: 85.0,
       maxScore: 98.5,
@@ -43,7 +43,7 @@ export default function Results() {
 
   // Mock data for class distribution
   const mockDistributions = [
-    { name: 'Mucosa', percentage: 50 },
+    { name: 'Mucus', percentage: 50 },
     { name: 'Lesions', percentage: 30 },
     { name: 'Light', percentage: 20 },
   ];
