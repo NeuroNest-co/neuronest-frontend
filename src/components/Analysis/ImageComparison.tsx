@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface Finding {
   class_name: string;
   mean_score: number;

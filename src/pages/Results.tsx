@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, Filter, Download, FileText, Trash2 } from 'lucide-react';
+import { Filter, FileText } from 'lucide-react';
 import Button from '../components/common/Button';
 import ResultsTable from '../components/Results/ResultsTable';
 import ResultsFilter from '../components/Results/ResultsFilter';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Download, FileText } from 'lucide-react';
 import Button from '../common/Button';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
