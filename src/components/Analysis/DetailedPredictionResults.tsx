@@ -1,19 +1,15 @@
-import PredictionTable from './PredictionTable';
-import ClassDistributionChart from './ClassDistributionChart';
+import React from 'react';
 
 interface DetailedPredictionResultsProps {
   predictions: {
-    id: string;
-    name: string;
-    precision: number;
-    minScore: number;
-    maxScore: number;
-    mean: number;
-    mode: number;
+    patientId: string;
+    age: number;
+    count: number;
   }[];
   distributions: {
-    name: string;
-    percentage: number;
+    patientId: string;
+    age: number;
+    count: number;
   }[];
 }
 
@@ -22,23 +18,24 @@ export default function DetailedPredictionResults({
   distributions,
 }: DetailedPredictionResultsProps) {
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Detailed Analysis Results</h2>
-        <p className="text-gray-600 mb-6">
-          Comprehensive breakdown of prediction results and class distributions
-        </p>
-      </div>
+    <div>
+      <h2>Predictions</h2>
+      {predictions.map((prediction, index) => (
+        <div key={index}>
+          <p>Patient ID: {prediction.patientId}</p>
+          <p>Age: {prediction.age}</p>
+          <p>Count: {prediction.count}</p>
+        </div>
+      ))}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">Prediction Metrics</h3>
-          <PredictionTable predictions={predictions} />
+      <h2>Distributions</h2>
+      {distributions.map((distribution, index) => (
+        <div key={index}>
+          <p>Patient ID: {distribution.patientId}</p>
+          <p>Age: {distribution.age}</p>
+          <p>Count: {distribution.count}</p>
         </div>
-        <div>
-          <ClassDistributionChart distributions={distributions} />
-        </div>
-      </div>
+      ))}
     </div>
   );
 }

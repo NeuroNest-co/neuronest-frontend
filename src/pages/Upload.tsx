@@ -3,12 +3,43 @@ import UploadActions from '../components/Upload/UploadActions';
 import ImagePreview from '../components/Upload/ImagePreview';
 import ImageComparison from '../components/Analysis/ImageComparison';
 import AnalysisResults from '../components/Analysis/AnalysisResults';
+import { useAnalysis } from '../context/AnalysisContext';
+
+export interface Metric {
+  class_name: string;
+  mean_score: number;
+  max_score: number;
+  min_score: number;
+  count: number;
+}
+
+export interface PieChartData {
+  class: string;
+  count: number;
+}
+
+export interface AnalysisResponse {
+  success: boolean;
+  message: string;
+  data: {
+    patientId: string;
+    age: number;
+    doctor_comment: string;
+    date: string;
+    original_image_url: string;
+    predicted_image_url: string;
+    metrics: Metric[];
+    pie_chart_data: PieChartData[];
+  };
+}
 
 export default function Upload() {
-  const BASE_URL = 'https://cancer-detect.onrender.com';
-  const [file, setFile] = useState<File | null>(null); // Handle a single file
+  const BASE_URL = 'http://127.0.0.1:8000';
+  const [file, setFile] = useState<File | null>(null);
+  const [age, setAge] = useState<number | null>(null);
+  const [doctorComment, setDoctorComment] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
-  const [analysisResults, setAnalysisResults] = useState<any>(null);
+  const { analysisResults, setAnalysisResults } = useAnalysis();
 
   const handleFileSelect = (fileList: FileList) => {
     if (fileList.length > 0) {
@@ -29,6 +60,8 @@ export default function Upload() {
 
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('age', String(age));
+    formData.append('doctor_comment', doctorComment || '');
 
     try {
       const response = await fetch(`${BASE_URL}/predict/`, {
@@ -40,13 +73,9 @@ export default function Upload() {
         throw new Error('Image analysis failed');
       }
 
-      const data = await response.json();
-      setAnalysisResults({
-        originalImage: `${BASE_URL}${data.data.original_image_url}`,
-        segmentedImage: `${BASE_URL}${data.data.predicted_image_url}`,
-        findings: data.data.metrics,
-        pieChartData: data.data.pie_chart_data,
-      });
+      const data: AnalysisResponse = await response.json();
+      setAnalysisResults(data);
+      
     } catch (error) {
       console.error('Error during analysis:', error);
     } finally {
@@ -64,10 +93,21 @@ export default function Upload() {
           </p>
         </div>
 
+        <input 
+        type="number" 
+        value={age ?? ''}
+        onChange={(e) => setAge(parseInt(e.target.value))}
+        placeholder="Patient Age"
+      />
+      <textarea
+        value={doctorComment ?? ''}
+        onChange={(e) => setDoctorComment(e.target.value)}
+        placeholder="Doctor's Comment"
+      />
         <UploadActions
           onFileSelect={handleFileSelect}
-          canAnalyze={false} // Disable the analyze button in UploadActions
-          onAnalyze={() => {}}
+          canAnalyze={!!file && !analyzing} // Enable the analyze button if file is selected and not analyzing
+          onAnalyze={handleAnalyze}
         />
 
         {file && (
@@ -95,13 +135,13 @@ export default function Upload() {
         {analysisResults && (
           <div className="space-y-8">
             <ImageComparison
-              originalImage={analysisResults.originalImage}
-              segmentedImage={analysisResults.segmentedImage}
-              findings={analysisResults.findings}
+              originalImage={`${BASE_URL}${analysisResults.data.original_image_url}`}
+              segmentedImage={`${BASE_URL}${analysisResults.data.predicted_image_url}`}
+              findings={analysisResults.data.metrics}
             />
             <AnalysisResults
-              findings={analysisResults.findings}
-              pieChartData={analysisResults.pieChartData}
+              findings={analysisResults.data.metrics}
+              pieChartData={analysisResults.data.pie_chart_data}
             />
           </div>
         )}

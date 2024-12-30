@@ -5,85 +5,65 @@ import ResultsTable from '../components/Results/ResultsTable';
 import ResultsFilter from '../components/Results/ResultsFilter';
 import ResultsStats from '../components/Results/ResultsStats';
 import DetailedPredictionResults from '../components/Analysis/DetailedPredictionResults';
+import { useAnalysis } from '../context/AnalysisContext';
+
+
 
 export default function Results() {
   const [selectedPeriod, setSelectedPeriod] = useState('all');
   const [filterOpen, setFilterOpen] = useState(false);
+  const { analysisResults } = useAnalysis();
 
-  // Mock data for predictions
-  const mockPredictions = [
+  
+  if (!analysisResults) {
+    return <div>No analysis results available.</div>;
+  }
+const {data} = analysisResults;
+const {patientId, age, doctor_comment, date, original_image_url, predicted_image_url, metrics, pie_chart_data} = data;
+
+const totalScans = parseInt(patientId.split('-').pop() || '0', 10); 
+const pendingReview = 0;
+const addressed = totalScans - pendingReview;
+const highSeverity = metrics.filter((metric) => metric.class_name === 'lesion' && metric.count > 3).length;
+const severity = metrics.reduce((acc, metric) => {
+  if (metric.count >= 6) return 'High';
+  if (metric.count >= 3) return 'Medium';
+  return acc;
+}, 'Low');
+
+const lesionCount = metrics.filter(metric => metric.class_name === 'lesion').reduce((total, metric) => total + metric.count, 0);
+
+  const dataVisualization = [
     {
-      id: '1',
-      name: 'Mucus',
-      precision: 95.5,
-      minScore: 85.0,
-      maxScore: 98.5,
-      mean: 92.3,
-      mode: 94.0,
-    },
-    {
-      id: '2',
-      name: 'Lesions',
-      precision: 88.7,
-      minScore: 75.5,
-      maxScore: 95.0,
-      mean: 85.6,
-      mode: 87.5,
-    },
-    {
-      id: '3',
-      name: 'Light',
-      precision: 92.3,
-      minScore: 82.0,
-      maxScore: 97.0,
-      mean: 89.8,
-      mode: 91.0,
-    },
+      patientId: patientId,
+      age : age,
+      count: pie_chart_data.some(data => data.class === 'lesion') ? pie_chart_data.reduce((acc, data) => data.class === 'lesion' ? acc + data.count : acc, 0) : 0
+    }
   ];
 
-  // Mock data for class distribution
-  const mockDistributions = [
-    { name: 'Mucus', percentage: 50 },
-    { name: 'Lesions', percentage: 30 },
-    { name: 'Light', percentage: 20 },
-  ];
+  const distribution = [{
+    patientId: patientId,
+    age: age,
+    count: pie_chart_data.some(data => data.class === 'lesion') ? pie_chart_data.reduce((acc, data) => data.class === 'lesion' ? acc + data.count : acc, 0) : 0
+  }];
 
   // Rest of the existing mock data
-  const mockResults = [
+  const tableRecords = 
     {
-      id: 1,
-      patientId: 'P-2024-001',
-      date: '2024-03-15',
-      lesionCount: 3,
-      severity: 'Medium',
-      confidence: 89,
-      status: 'Reviewed',
-    },
-    {
-      id: 2,
-      patientId: 'P-2024-002',
-      date: '2024-03-14',
-      lesionCount: 1,
-      severity: 'Low',
-      confidence: 95,
-      status: 'Pending Review',
-    },
-    {
-      id: 3,
-      patientId: 'P-2024-003',
-      date: '2024-03-13',
-      lesionCount: 5,
-      severity: 'High',
-      confidence: 92,
-      status: 'Reviewed',
-    },
-  ];
+      patientId: patientId,
+      date: date,
+      lesionCount: lesionCount,
+      severity: severity,
+      age: age,
+      status: doctor_comment,
+    }
+  ;
 
   const stats = {
-    totalScans: 156,
-    averageConfidence: 91,
-    highSeverity: 23,
-    pendingReview: 5,
+    totalScans: totalScans,
+    addressed: addressed,
+    highSeverity: highSeverity,
+    pendingReview: pendingReview,
   };
 
   return (
@@ -127,12 +107,12 @@ export default function Results() {
 
       <div className="space-y-8">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <ResultsTable results={mockResults} />
+          <ResultsTable results={[tableRecords]} />
         </div>
 
         <DetailedPredictionResults
-          predictions={mockPredictions}
-          distributions={mockDistributions}
+          predictions={dataVisualization}
+          distributions={distribution}
         />
       </div>
     </div>
