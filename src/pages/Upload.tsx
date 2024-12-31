@@ -35,7 +35,7 @@ export interface AnalysisResponse {
 }
 
 export default function Upload() {
-  const BASE_URL = 'http://127.0.0.1:8000';
+  const BASE_URL = 'https://cancer-detect.onrender.com';
   const [file, setFile] = useState<File | null>(null);
   const [age, setAge] = useState<number | null>(null);
   const [doctorComment, setDoctorComment] = useState<string | null>(null);
