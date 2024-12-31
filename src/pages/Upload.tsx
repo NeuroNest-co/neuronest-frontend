@@ -38,6 +38,7 @@ export default function Upload() {
   const [file, setFile] = useState<File | null>(null);
   const [age, setAge] = useState<number | null>(null);
   const [doctorComment, setDoctorComment] = useState<string | null>(null);
+
   const [analyzing, setAnalyzing] = useState(false);
   const { analysisResults, setAnalysisResults } = useAnalysis();
 
