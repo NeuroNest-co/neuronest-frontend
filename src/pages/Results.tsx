@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Filter, FileText } from 'lucide-react';
 import Button from '../components/common/Button';
 import ResultsTable from '../components/Results/ResultsTable';
@@ -9,82 +9,117 @@ import DetailedPredictionResults from '../components/Analysis/DetailedPrediction
 export default function Results() {
   const [selectedPeriod, setSelectedPeriod] = useState('all');
   const [filterOpen, setFilterOpen] = useState(false);
+  const [allResponses, setAllResponses] = useState<ResponseData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock data for predictions
-  const mockPredictions = [
-    {
-      id: '1',
-      name: 'Mucus',
-      precision: 95.5,
-      minScore: 85.0,
-      maxScore: 98.5,
-      mean: 92.3,
-      mode: 94.0,
-    },
-    {
-      id: '2',
-      name: 'Lesions',
-      precision: 88.7,
-      minScore: 75.5,
-      maxScore: 95.0,
-      mean: 85.6,
-      mode: 87.5,
-    },
-    {
-      id: '3',
-      name: 'Light',
-      precision: 92.3,
-      minScore: 82.0,
-      maxScore: 97.0,
-      mean: 89.8,
-      mode: 91.0,
-    },
-  ];
+  // Type definitions
+  interface Metric {
+    class_name: string;
+    count: number;
+  }
 
-  // Mock data for class distribution
-  const mockDistributions = [
-    { name: 'Mucus', percentage: 50 },
-    { name: 'Lesions', percentage: 30 },
-    { name: 'Light', percentage: 20 },
-  ];
+  interface PieChartData {
+    class: string;
+    count: number;
+  }
 
-  // Rest of the existing mock data
-  const mockResults = [
-    {
-      id: 1,
-      patientId: 'P-2024-001',
-      date: '2024-03-15',
-      lesionCount: 3,
-      severity: 'Medium',
-      confidence: 89,
-      status: 'Reviewed',
-    },
-    {
-      id: 2,
-      patientId: 'P-2024-002',
-      date: '2024-03-14',
-      lesionCount: 1,
-      severity: 'Low',
-      confidence: 95,
-      status: 'Pending Review',
-    },
-    {
-      id: 3,
-      patientId: 'P-2024-003',
-      date: '2024-03-13',
-      lesionCount: 5,
-      severity: 'High',
-      confidence: 92,
-      status: 'Reviewed',
-    },
-  ];
+  interface ResponseData {
+    metrics: Metric[];
+    pie_chart_data: PieChartData[];
+    patientId: string;
+    date: string;
+    age: number;
+    doctor_comment: string;
+  }
 
-  const stats = {
-    totalScans: 156,
-    averageConfidence: 91,
-    highSeverity: 23,
-    pendingReview: 5,
+  // Fetch data from the backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/all_data/');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        if (result.success) {
+          setAllResponses(result.data || []);
+        } else {
+          console.error('Error in API response:', result.message);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!allResponses.length) {
+    return <div>No analysis results available.</div>;
+  }
+
+  // Helper function to calculate stats
+  const calculateStats = (responses: ResponseData[]) => {
+    const allMetrics = responses.flatMap((response) => response.metrics, []);
+    const allDoctorComments = responses.map((response) => response.doctor_comment || '');
+  
+    const totalScans = responses.length;
+  
+    const pendingReview = allDoctorComments.filter((comment) => comment.includes('Pending')).length;
+    const addressed = totalScans - pendingReview;
+  
+    const highSeverity = allMetrics.filter((metric) => metric.class_name === 'lesion' && metric.count > 3).length;
+  
+    return {
+      totalScans,
+      addressed,
+      highSeverity,
+      pendingReview,
+    };
   };
+  
+  // Calculate stats
+  const stats = calculateStats(allResponses);
+
+  const dataVisualization = allResponses.flatMap((response) =>
+    (response.pie_chart_data || []).map((data) => ({
+      patientId: response.patientId,
+      age: response.age,
+      count: data.class === 'lesion' ? data.count : 0,
+    }))
+  );
+  
+
+  const resultsTableData = allResponses.map((response) => {
+    const metrics = response.metrics || [];
+  
+    const lesionMetrics = metrics?.filter((metric) => metric.class_name === 'lesion') || [];
+  
+    const lesionCount = lesionMetrics.reduce((acc, metric) => acc + (metric?.count || 0), 0);
+  
+    const severity = lesionCount >= 3
+      ? 'High'
+      : lesionCount >= 2
+      ? 'Medium'
+      : 'Low';
+  
+    return {
+      patientId: response.patientId,
+      date: response.date,
+      lesionCount,
+      severity,
+      age: response.age,
+      status: response.doctor_comment,
+    };
+  });
+  
+  
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -92,9 +127,7 @@ export default function Results() {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Analysis Results</h1>
-            <p className="mt-2 text-gray-600">
-              View and manage all cervical scan analysis results
-            </p>
+            <p className="mt-2 text-gray-600">View and manage all cervical scan analysis results</p>
           </div>
           <div className="flex space-x-3">
             <Button
@@ -107,7 +140,9 @@ export default function Results() {
             <Button
               variant="secondary"
               icon={FileText}
-              onClick={() => {/* Implement export logic */}}
+              onClick={() => {
+                // Export report logic (to be implemented)
+              }}
             >
               Export Report
             </Button>
@@ -127,12 +162,11 @@ export default function Results() {
 
       <div className="space-y-8">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <ResultsTable results={mockResults} />
+          <ResultsTable results={resultsTableData} />
         </div>
 
         <DetailedPredictionResults
-          predictions={mockPredictions}
-          distributions={mockDistributions}
+          distributions={dataVisualization}
         />
       </div>
     </div>

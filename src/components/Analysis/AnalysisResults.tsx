@@ -61,7 +61,7 @@ export default function AnalysisResults({ findings, pieChartData }: AnalysisResu
       <h3 className="text-lg font-semibold mb-3">Analysis Results</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Findings Table */}
-        {/* <div>
+        <div>
           <h4 className="text-md font-semibold mb-2">Findings</h4>
           <table className="w-full border-collapse border border-gray-300">
             <thead>
@@ -81,7 +81,7 @@ export default function AnalysisResults({ findings, pieChartData }: AnalysisResu
               ))}
             </tbody>
           </table>
-        </div> */}
+        </div>
 
         {/* Pie Chart */}
         <div>

@@ -1,12 +1,11 @@
 import { Eye, Download, Trash2 } from 'lucide-react';
 
 interface Result {
-  id: number;
   patientId: string;
   date: string;
   lesionCount: number;
   severity: string;
-  confidence: number;
+  age: number;
   status: string;
 }
 
@@ -31,7 +30,7 @@ export default function ResultsTable({ results }: ResultsTableProps) {
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            {['Patient ID', 'Date', 'Lesions', 'Severity', 'Confidence', 'Status', 'Actions'].map(
+            {['Patient ID', 'Date', 'Lesions', 'Severity', 'Age', 'Status', 'Actions'].map(
               (header) => (
                 <th
                   key={header}
@@ -45,7 +44,7 @@ export default function ResultsTable({ results }: ResultsTableProps) {
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {results.map((result) => (
-            <tr key={result.id} className="hover:bg-gray-50">
+            <tr key={result.patientId} className="hover:bg-gray-50">
               <td className="px-6 py-4 whitespace-nowrap">
                 <span className="text-sm font-medium text-gray-900">
                   {result.patientId}
@@ -65,7 +64,7 @@ export default function ResultsTable({ results }: ResultsTableProps) {
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <span className="text-sm text-gray-900">{result.confidence}%</span>
+                <span className="text-sm text-gray-900">{result.age}</span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <span
