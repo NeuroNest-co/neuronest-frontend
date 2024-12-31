@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import UploadActions from '../components/Upload/UploadActions';
 import ImagePreview from '../components/Upload/ImagePreview';
 import ImageComparison from '../components/Analysis/ImageComparison';
