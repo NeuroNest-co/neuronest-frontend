@@ -1,11 +1,7 @@
 interface PredictionClass {
-  id: string;
-  name: string;
-  precision: number;
-  minScore: number;
-  maxScore: number;
-  mean: number;
-  mode: number;
+  patientId: string;
+  age: number;
+  count: number;
 }
 
 interface PredictionTableProps {
@@ -19,45 +15,27 @@ export default function PredictionTable({ predictions }: PredictionTableProps) {
         <thead className="bg-gray-50">
           <tr>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Class Name
+              Patient ID
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Precision
+              Age
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Min Score
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Max Score
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Mean
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Mode
+              Count
             </th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {predictions.map((prediction) => (
-            <tr key={prediction.id} className="hover:bg-gray-50">
+          {predictions.map((prediction, index) => (
+            <tr key={index}>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {prediction.name}
+                {prediction.patientId}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {prediction.precision.toFixed(2)}%
+                {prediction.age}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {prediction.minScore.toFixed(2)}%
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {prediction.maxScore.toFixed(2)}%
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {prediction.mean.toFixed(2)}%
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {prediction.mode.toFixed(2)}%
+                {prediction.count}
               </td>
             </tr>
           ))}

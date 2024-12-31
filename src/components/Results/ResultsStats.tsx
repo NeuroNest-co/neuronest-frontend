@@ -3,7 +3,7 @@ import { FileText, AlertTriangle, Clock, Activity } from 'lucide-react';
 interface ResultsStatsProps {
   stats: {
     totalScans: number;
-    averageConfidence: number;
+    addressed: number;
     highSeverity: number;
     pendingReview: number;
   };
@@ -19,8 +19,8 @@ export default function ResultsStats({ stats }: ResultsStatsProps) {
       bgColor: 'bg-blue-100',
     },
     {
-      label: 'Average Confidence',
-      value: `${stats.averageConfidence}%`,
+      label: 'Addressed Cases',
+      value: stats.addressed,
       icon: Activity,
       color: 'text-green-600',
       bgColor: 'bg-green-100',

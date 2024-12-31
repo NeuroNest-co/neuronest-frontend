@@ -1,44 +1,56 @@
-import PredictionTable from './PredictionTable';
-import ClassDistributionChart from './ClassDistributionChart';
+import { Pie } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface DetailedPredictionResultsProps {
-  predictions: {
-    id: string;
-    name: string;
-    precision: number;
-    minScore: number;
-    maxScore: number;
-    mean: number;
-    mode: number;
-  }[];
   distributions: {
-    name: string;
-    percentage: number;
+    age: number;
+    count: number;
   }[];
 }
 
 export default function DetailedPredictionResults({
-  predictions,
   distributions,
 }: DetailedPredictionResultsProps) {
-  return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Detailed Analysis Results</h2>
-        <p className="text-gray-600 mb-6">
-          Comprehensive breakdown of prediction results and class distributions
-        </p>
-      </div>
+  const uniqueAges = Array.from(new Set(distributions.map((dist) => dist.age)));
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">Prediction Metrics</h3>
-          <PredictionTable predictions={predictions} />
-        </div>
-        <div>
-          <ClassDistributionChart distributions={distributions} />
-        </div>
-      </div>
+  const chartData = {
+    labels: uniqueAges.map((age) => `Age: ${age}`),
+    datasets: [
+      {
+        label: 'Count',
+        data: uniqueAges.map((age) => distributions.filter((dist) => dist.age === age).reduce((acc, curr) => acc + curr.count, 0)),
+        backgroundColor: [
+          '#FF6384',
+          '#36A2EB',
+          '#FFCE56',
+          '#4BC0C0',
+          '#9966FF',
+          '#FF9F40',
+        ],
+        hoverBackgroundColor: [
+          '#FF6384',
+          '#36A2EB',
+          '#FFCE56',
+          '#4BC0C0',
+          '#9966FF',
+          '#FF9F40',
+        ],
+      },
+    ],
+  };
+
+  return (
+    <div  style={{ width: '400px', height: '500px', margin: '0 auto' }}>
+      
+      <h2 style={{ textAlign: 'center' }} >Distribution</h2>
+      <Pie data={chartData} />
     </div>
   );
 }

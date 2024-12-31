@@ -1,50 +1,46 @@
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
-
-interface ClassDistribution {
-  name: string;
-  percentage: number;
+interface Distribution {
+  patientId: string;
+  age: number;
+  count: number;
 }
 
 interface ClassDistributionChartProps {
-  distributions: ClassDistribution[];
+  distributions: Distribution[];
 }
 
-export default function ClassDistributionChart({ distributions }: ClassDistributionChartProps) {
+export default function ClassDistributionChart({
+  distributions,
+}: ClassDistributionChartProps) {
+  // Prepare data for the bar chart
   const data = {
-    labels: distributions.map(d => d.name),
+    labels: distributions.map(dist => `Patient ${dist.patientId}`),
     datasets: [
       {
-        data: distributions.map(d => d.percentage),
-        backgroundColor: [
-          'rgba(54, 162, 235, 0.8)',  // Mucosa
-          'rgba(255, 99, 132, 0.8)',  // Lesions
-          'rgba(255, 206, 86, 0.8)',  // Light
-        ],
-        borderColor: [
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 99, 132, 1)',
-          'rgba(255, 206, 86, 1)',
-        ],
+        label: 'Age',
+        data: distributions.map(dist => dist.age),
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      },
+      {
+        label: 'Count',
+        data: distributions.map(dist => dist.count),
+        backgroundColor: 'rgba(153, 102, 255, 0.6)',
+        borderColor: 'rgba(153, 102, 255, 1)',
         borderWidth: 1,
       },
     ],
   };
 
   const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'bottom' as const,
+    scales: {
+      x: {
+        beginAtZero: true,
       },
-      title: {
-        display: true,
-        text: 'Class Distribution',
-        font: {
-          size: 16,
-        },
+      y: {
+        beginAtZero: true,
       },
     },
   };
@@ -53,13 +49,14 @@ export default function ClassDistributionChart({ distributions }: ClassDistribut
     <div className="bg-white rounded-lg shadow p-6">
       <h3 className="text-lg font-semibold mb-4">Class Distribution Analysis</h3>
       <div className="w-full max-w-md mx-auto">
-        <Pie data={data} options={options} />
+        <Bar data={data} options={options} />
       </div>
       <div className="mt-6 grid grid-cols-3 gap-4">
         {distributions.map((dist) => (
-          <div key={dist.name} className="text-center">
-            <p className="text-sm font-medium text-gray-600">{dist.name}</p>
-            <p className="text-2xl font-bold text-indigo-600">{dist.percentage}%</p>
+          <div key={dist.patientId} className="text-center">
+            <p className="text-sm font-medium text-gray-600">Patient ID: {dist.patientId}</p>
+            <p className="text-sm font-medium text-gray-600">Age: {dist.age}</p>
+            <p className="text-2xl font-bold text-indigo-600">Count: {dist.count}</p>
           </div>
         ))}
       </div>

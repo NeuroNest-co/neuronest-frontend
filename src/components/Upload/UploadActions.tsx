@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Upload, ImagePlus } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import Button from '../common/Button';
 
 interface UploadActionsProps {
@@ -8,7 +8,7 @@ interface UploadActionsProps {
   onAnalyze: () => void;
 }
 
-export default function UploadActions({ onFileSelect, canAnalyze, onAnalyze }: UploadActionsProps) {
+export default function UploadActions({ onFileSelect, canAnalyze }: UploadActionsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = () => {
@@ -40,14 +40,7 @@ export default function UploadActions({ onFileSelect, canAnalyze, onAnalyze }: U
       >
         Select File
       </Button>
-      {canAnalyze && (
-        <Button
-          icon={ImagePlus}
-          onClick={onAnalyze}
-        >
-          Analyze Image
-        </Button>
-      )}
+      {canAnalyze}
     </div>
   );
 }

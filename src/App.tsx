@@ -6,24 +6,27 @@ import Upload from './pages/Upload';
 import Results from './pages/Results';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
+import { AnalysisProvider } from './context/AnalysisContext';
 
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <Navbar />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/upload" element={<Upload />} />
-            <Route path="/results" element={<Results />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/login" element={<Login />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+      <AnalysisProvider>
+        <Router>
+          <div className="min-h-screen bg-gray-50 flex flex-col">
+            <Navbar />
+            <main className="flex-grow">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/upload" element={<Upload />} />
+                <Route path="/results" element={<Results />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/login" element={<Login />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </Router>
+      </AnalysisProvider>   
   );
 }
 
