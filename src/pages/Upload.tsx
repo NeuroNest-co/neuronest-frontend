@@ -5,7 +5,7 @@ import ImageComparison from '../components/Analysis/ImageComparison';
 import AnalysisResults from '../components/Analysis/AnalysisResults';
 
 export default function Upload() {
-  const BASE_URL = 'http://127.0.0.1:8000';
+  const BASE_URL = 'https://cancer-detect.onrender.com';
   const [file, setFile] = useState<File | null>(null); // Handle a single file
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<any>(null);
