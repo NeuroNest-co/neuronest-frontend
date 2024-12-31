@@ -1,41 +1,56 @@
-import React from 'react';
+import { Pie } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface DetailedPredictionResultsProps {
-  predictions: {
-    patientId: string;
-    age: number;
-    count: number;
-  }[];
   distributions: {
-    patientId: string;
     age: number;
     count: number;
   }[];
 }
 
 export default function DetailedPredictionResults({
-  predictions,
   distributions,
 }: DetailedPredictionResultsProps) {
-  return (
-    <div>
-      <h2>Predictions</h2>
-      {predictions.map((prediction, index) => (
-        <div key={index}>
-          <p>Patient ID: {prediction.patientId}</p>
-          <p>Age: {prediction.age}</p>
-          <p>Count: {prediction.count}</p>
-        </div>
-      ))}
+  const uniqueAges = Array.from(new Set(distributions.map((dist) => dist.age)));
 
-      <h2>Distributions</h2>
-      {distributions.map((distribution, index) => (
-        <div key={index}>
-          <p>Patient ID: {distribution.patientId}</p>
-          <p>Age: {distribution.age}</p>
-          <p>Count: {distribution.count}</p>
-        </div>
-      ))}
+  const chartData = {
+    labels: uniqueAges.map((age) => `Age: ${age}`),
+    datasets: [
+      {
+        label: 'Count',
+        data: uniqueAges.map((age) => distributions.filter((dist) => dist.age === age).reduce((acc, curr) => acc + curr.count, 0)),
+        backgroundColor: [
+          '#FF6384',
+          '#36A2EB',
+          '#FFCE56',
+          '#4BC0C0',
+          '#9966FF',
+          '#FF9F40',
+        ],
+        hoverBackgroundColor: [
+          '#FF6384',
+          '#36A2EB',
+          '#FFCE56',
+          '#4BC0C0',
+          '#9966FF',
+          '#FF9F40',
+        ],
+      },
+    ],
+  };
+
+  return (
+    <div  style={{ width: '400px', height: '500px', margin: '0 auto' }}>
+      
+      <h2 style={{ textAlign: 'center' }} >Distribution</h2>
+      <Pie data={chartData} />
     </div>
   );
 }
