@@ -4,7 +4,6 @@ import ImagePreview from '../components/Upload/ImagePreview';
 import ImageComparison from '../components/Analysis/ImageComparison';
 import AnalysisResults from '../components/Analysis/AnalysisResults';
 import { useAnalysis } from '../context/AnalysisContext';
-import { textAlign } from 'html2canvas/dist/types/css/property-descriptors/text-align';
 
 export interface Metric {
   class_name: string;
