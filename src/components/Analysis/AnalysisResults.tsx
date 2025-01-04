@@ -48,10 +48,10 @@ export default function AnalysisResults({ findings, pieChartData }: AnalysisResu
   };
 
   // Add percentages for each class
-  const pieChartWithPercentages = pieChartData.map((data) => ({
-    ...data,
-    percentage: ((data.count / totalCount) * 100).toFixed(2),
-  }));
+  // const pieChartWithPercentages = pieChartData.map((data) => ({
+  //   ...data,
+  //   percentage: ((data.count / totalCount) * 100).toFixed(2),
+  // }));
 
   // Function to download the report as a PDF
   const downloadPDF = async () => {
