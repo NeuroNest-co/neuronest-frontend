@@ -33,7 +33,7 @@ export default function AnalysisResults({ findings, pieChartData }: AnalysisResu
   }
 
   // Calculate the total count for percentages in the pie chart
-  const totalCount = pieChartData.reduce((sum, data) => sum + data.count, 0);
+  // const totalCount = pieChartData.reduce((sum, data) => sum + data.count, 0);
 
   // Prepare data for the pie chart
   const pieData = {
